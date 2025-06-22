@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-06-22T19:45:48.410Z",
+  "version": "1.0",
+  "totalEvents": 5,
+  "events": [
+    {
+      "id": 1,
+      "title": "International University Programming Contest (IUPC)",
+      "date": "2025-07-15T10:00:00.000Z",
+      "location": "NSU Auditorium",
+      "description": "Annual programming contest for university students featuring algorithmic challenges",
+      "source": "Facebook",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "Tech Summit 2025: Future of AI",
+      "date": "2025-07-01T09:00:00.000Z",
+      "location": "BUET Campus",
+      "description": "Technology summit featuring industry leaders discussing the future of artificial intelligence",
+      "source": "Website",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "title": "Full Stack Development Bootcamp",
+      "date": "2025-06-25T10:00:00.000Z",
+      "location": "Online Platform",
+      "description": "Intensive coding bootcamp covering modern web development technologies",
+      "source": "Facebook",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "title": "hello",
+      "date": "2025-06-25T21:02:00.000Z",
+      "location": "efe",
+      "description": "efefef",
+      "source": "Website",
+      "createdAt": "2025-06-22T19:39:52.957Z"
+    },
+    {
+      "id": 6,
+      "title": "DevFest Bangladesh 2025",
+      "date": "2025-09-15T08:00:00.000Z",
+      "location": "International Convention City Bashundhara",
+      "description": "Google Developer Group's annual technology festival",
+      "source": "Facebook",
+      "createdAt": "2025-06-22T19:45:48.398Z"
+    }
+  ]
+}

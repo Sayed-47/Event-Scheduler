@@ -1,0 +1,61 @@
+{
+  "timestamp": "2024-12-19T10:30:00.000Z",
+  "version": "1.0",
+  "totalEvents": 6,
+  "events": [
+    {
+      "id": 1,
+      "title": "International University Programming Contest (IUPC)",
+      "date": "2025-07-15T10:00:00.000Z",
+      "location": "NSU Auditorium",
+      "description": "Annual programming contest for university students featuring algorithmic challenges",
+      "source": "Facebook",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "Tech Summit 2025: Future of AI",
+      "date": "2025-07-01T09:00:00.000Z",
+      "location": "BUET Campus",
+      "description": "Technology summit featuring industry leaders discussing the future of artificial intelligence",
+      "source": "Website",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "AI/ML Seminar: Deep Learning Advances",
+      "date": "2025-06-28T14:00:00.000Z",
+      "location": "DIU Auditorium",
+      "description": "Comprehensive seminar on Artificial Intelligence and Machine Learning recent advances",
+      "source": "Email",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "title": "Full Stack Development Bootcamp",
+      "date": "2025-06-25T10:00:00.000Z",
+      "location": "Online Platform",
+      "description": "Intensive coding bootcamp covering modern web development technologies",
+      "source": "Facebook",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "title": "Blockchain & Cryptocurrency Workshop",
+      "date": "2025-07-20T15:30:00.000Z",
+      "location": "Dhaka University",
+      "description": "Hands-on workshop exploring blockchain technology and cryptocurrency development",
+      "source": "Website",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    },
+    {
+      "id": 6,
+      "title": "Cybersecurity Conference 2025",
+      "date": "2025-08-05T11:00:00.000Z",
+      "location": "Sheraton Hotel",
+      "description": "Annual cybersecurity conference featuring threat analysis and protection strategies",
+      "source": "Email",
+      "createdAt": "2024-12-19T10:30:00.000Z"
+    }
+  ]
+}

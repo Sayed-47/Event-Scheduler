@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Scheduler - Node.js DSA Project</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Event Scheduler</h1>
+            <p>Powered by Node.js & DSA Algorithms for Maximum Efficiency</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalEvents">0</div>
+                <div class="stat-label">Total Events</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="upcomingEvents">0</div>
+                <div class="stat-label">Upcoming</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayEvents">0</div>
+                <div class="stat-label">Today</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search events by title, location, or source...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <select class="sort-select" id="sortSelect">
+                <option value="date">Sort by Date</option>
+                <option value="title">Sort by Title</option>
+                <option value="location">Sort by Location</option>
+                <option value="source">Sort by Source</option>
+            </select>
+            <button class="btn btn-primary" onclick="openAddEventModal()">Add Event</button>
+            <button class="btn btn-secondary" onclick="fetchEvents()">Fetch External</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading events...</p>
+        </div>
+
+        <div class="events-grid" id="eventsGrid">
+            <div class="no-events">
+                <h3>No events found</h3>
+                <p>Add some events to get started!</p>
+            </div>
+        </div>
+
+        <div class="import-export-controls">
+            <button class="btn btn-secondary" onclick="exportEvents()">📁 Export Events</button>
+            <label for="importFile" class="file-label">📥 Import Events</label>
+            <input type="file" id="importFile" class="file-input" accept=".json" onchange="importEvents(event)">
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal" id="addEventModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeAddEventModal()">&times;</button>
+            <h2>Add New Event</h2>
+            <form id="eventForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="eventTitle">Event Title</label>
+                        <input type="text" class="form-input" id="eventTitle" placeholder="Enter event title" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="eventDateTime">Date & Time</label>
+                        <input type="datetime-local" class="form-input" id="eventDateTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="eventLocation">Location</label>
+                        <input type="text" class="form-input" id="eventLocation" placeholder="Enter event location" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="eventSource">Source</label>
+                        <select class="form-input" id="eventSource" required>
+                            <option value="">Select source</option>
+                            <option value="Manual">Manual Entry</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Website">Website</option>
+                            <option value="Email">Email</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label" for="eventDescription">Description</label>
+                        <textarea class="form-input" id="eventDescription" rows="3" placeholder="Enter event description (optional)"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddEventModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Event</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
