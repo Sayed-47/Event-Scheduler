@@ -69,5 +69,27 @@
     },
     "createdAt": "2025-06-29T18:10:05.230Z",
     "updatedAt": "2025-06-29T18:10:05.230Z"
+  },
+  {
+    "id": "6bf08a54-2881-465f-812e-3580a91aaa39",
+    "title": "2025 Sharks Prospect Scrimmage",
+    "description": "ATTENTION! Tech CU Arena enforces a restricted bag policy for all events.",
+    "date": "2025-07-03",
+    "time": "00:00",
+    "datetime": "2025-07-03T18:00:00.000Z",
+    "location": "Tech CU Arena, San Jose, California",
+    "category": "networking",
+    "url": "https://www.ticketmaster.com/2025-sharks-prospect-scrimmage-san-jose-california-07-03-2025/event/1C0062B6AA31387C",
+    "source": "ticketmaster",
+    "sourceId": "G5vYZblQnGK-H",
+    "priceRange": null,
+    "ticketmasterData": {
+      "promoterId": "690",
+      "segment": "Sports",
+      "genre": "Hockey",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-29T18:22:44.875Z",
+    "updatedAt": "2025-06-29T18:22:44.875Z"
   }
 ]
