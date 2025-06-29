@@ -17,58 +17,74 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// POST /api/fetch-events - Fetch events from external APIs
+// POST /api/fetch-events - Fetch CSE events from external APIs for review
 router.post('/fetch-events', async (req, res) => {
   try {
-    console.log('Starting external event fetch...');
+    console.log('Fetching CSE events for review...');
     
-    // Fetch events from all external APIs
+    // Fetch events from all external APIs (without saving)
     const apiResults = await multiAPIService.fetchAllEvents();
     
     if (apiResults.events.length === 0) {
       return res.json({
-        message: 'No new events found from external APIs',
-        newEvents: 0,
-        summary: apiResults.summary
+        message: 'No CSE events found from external APIs',
+        events: [],
+        summary: apiResults.summary,
+        requiresApproval: false
       });
     }
 
-    // Load existing events
-    const existingEvents = await dataService.loadEvents();
-    console.log(`Found ${existingEvents.length} existing events`);
-
-    // Filter out events that already exist
-    const newEvents = [];
-    for (const apiEvent of apiResults.events) {
-      const isDuplicate = existingEvents.some(existing => 
-        existing.title.toLowerCase() === apiEvent.title.toLowerCase() &&
-        existing.date === apiEvent.date &&
-        (existing.location || '').toLowerCase() === (apiEvent.location || '').toLowerCase()
-      );
-
-      if (!isDuplicate) {
-        newEvents.push(apiEvent);
-      }
-    }
-
-    console.log(`Found ${newEvents.length} new unique events to add`);
-
-    // Add new events to storage
-    if (newEvents.length > 0) {
-      await dataService.addMultipleEvents(newEvents);
-    }
-
     res.json({
-      message: `Successfully fetched ${newEvents.length} new events from external APIs`,
-      newEvents: newEvents.length,
-      totalFetched: apiResults.events.length,
-      duplicatesSkipped: apiResults.events.length - newEvents.length,
-      summary: apiResults.summary
+      message: `Found ${apiResults.events.length} CSE events for review`,
+      events: apiResults.events,
+      summary: apiResults.summary,
+      requiresApproval: true
     });
   } catch (error) {
     console.error('Error fetching external events:', error);
     res.status(500).json({ 
-      error: 'Failed to fetch events from external APIs',
+      error: 'Failed to fetch CSE events from external APIs',
+      details: error.message 
+    });
+  }
+});
+
+// POST /api/approve-events - Save approved events to file
+router.post('/approve-events', async (req, res) => {
+  try {
+    const { approvedEvents } = req.body;
+    
+    if (!approvedEvents || !Array.isArray(approvedEvents)) {
+      return res.status(400).json({ 
+        error: 'Invalid request - approvedEvents array is required' 
+      });
+    }
+
+    console.log(`Approving ${approvedEvents.length} events...`);
+    
+    // Save approved events
+    const result = await multiAPIService.saveApprovedEvents(approvedEvents);
+    
+    let message;
+    if (result.newApprovedEvents > 0) {
+      message = `Successfully added ${result.newApprovedEvents} new events to your schedule`;
+      if (result.duplicatesSkipped > 0) {
+        message += ` (${result.duplicatesSkipped} duplicates skipped)`;
+      }
+    } else {
+      message = 'All selected events were already in your schedule';
+    }
+    
+    res.json({
+      message,
+      totalEvents: result.totalSaved,
+      newEvents: result.newApprovedEvents,
+      duplicatesSkipped: result.duplicatesSkipped
+    });
+  } catch (error) {
+    console.error('Error approving events:', error);
+    res.status(500).json({ 
+      error: 'Failed to approve and save events',
       details: error.message 
     });
   }

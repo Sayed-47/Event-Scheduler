@@ -1,16 +1,18 @@
 const EventbriteService = require('./eventbriteService');
 const TicketmasterService = require('./ticketmasterService');
+const DataService = require('./dataService');
 
 class MultiAPIService {
   constructor() {
     this.eventbriteService = new EventbriteService();
     this.ticketmasterService = new TicketmasterService();
+    this.dataService = new DataService();
   }
 
-  // Fetch events from all configured APIs
-  async fetchAllEvents() {
+  // Fetch events from all configured APIs and save to file (legacy method for auto-save)
+  async fetchAndSaveEvents() {
     try {
-      console.log('Starting to fetch events from multiple APIs...');
+      console.log('Starting to fetch CSE events from multiple APIs...');
       
       const results = {
         eventbrite: [],
@@ -20,9 +22,9 @@ class MultiAPIService {
 
       // Fetch from Eventbrite
       try {
-        console.log('Fetching events from Eventbrite...');
+        console.log('Fetching CSE events from Eventbrite...');
         results.eventbrite = await this.eventbriteService.fetchCSEEvents();
-        console.log(`Successfully fetched ${results.eventbrite.length} events from Eventbrite`);
+        console.log(`Successfully fetched ${results.eventbrite.length} real events from Eventbrite`);
       } catch (error) {
         console.error('Error fetching from Eventbrite:', error);
         results.errors.push({ source: 'eventbrite', error: error.message });
@@ -30,9 +32,9 @@ class MultiAPIService {
 
       // Fetch from Ticketmaster
       try {
-        console.log('Fetching events from Ticketmaster...');
+        console.log('Fetching CSE events from Ticketmaster...');
         results.ticketmaster = await this.ticketmasterService.fetchCSEEvents();
-        console.log(`Successfully fetched ${results.ticketmaster.length} events from Ticketmaster`);
+        console.log(`Successfully fetched ${results.ticketmaster.length} real events from Ticketmaster`);
       } catch (error) {
         console.error('Error fetching from Ticketmaster:', error);
         results.errors.push({ source: 'ticketmaster', error: error.message });
@@ -40,27 +42,191 @@ class MultiAPIService {
 
       // Combine all events
       const allEvents = [...results.eventbrite, ...results.ticketmaster];
-      console.log(`Total events fetched: ${allEvents.length}`);
+      console.log(`Total events fetched from APIs: ${allEvents.length}`);
 
-      // Remove duplicates
-      const uniqueEvents = this.removeDuplicates(allEvents);
-      console.log(`Unique events after deduplication: ${uniqueEvents.length}`);
+      if (allEvents.length > 0) {
+        // Remove duplicates
+        const uniqueEvents = this.removeDuplicates(allEvents);
+        console.log(`Unique events after deduplication: ${uniqueEvents.length}`);
 
-      // Sort by date
-      const sortedEvents = this.sortEventsByDate(uniqueEvents);
+        // Sort by date
+        const sortedEvents = this.sortEventsByDate(uniqueEvents);
 
-      return {
-        events: sortedEvents,
-        summary: {
-          total: sortedEvents.length,
-          eventbrite: results.eventbrite.length,
-          ticketmaster: results.ticketmaster.length,
-          duplicatesRemoved: allEvents.length - uniqueEvents.length,
-          errors: results.errors
+        // Get existing events from file
+        const existingEvents = await this.dataService.loadEvents();
+        
+        // Filter out events that already exist
+        const newEvents = sortedEvents.filter(newEvent => {
+          return !existingEvents.some(existing => 
+            existing.sourceId === newEvent.sourceId && existing.source === newEvent.source
+          );
+        });
+
+        if (newEvents.length > 0) {
+          // Add new events to existing events (don't replace)
+          const combinedEvents = [...existingEvents, ...newEvents];
+          await this.dataService.saveEvents(combinedEvents);
+          console.log(`Added ${newEvents.length} new events to existing ${existingEvents.length} events`);
+        } else {
+          console.log('No new events to add - all fetched events already exist');
         }
+
+        return {
+          events: sortedEvents,
+          summary: {
+            total: sortedEvents.length,
+            eventbrite: results.eventbrite.length,
+            ticketmaster: results.ticketmaster.length,
+            duplicatesRemoved: allEvents.length - uniqueEvents.length,
+            newEvents: newEvents.length,
+            errors: results.errors,
+            saved: true
+          }
+        };
+      } else {
+        console.log('No events found from APIs.');
+        
+        return {
+          events: [],
+          summary: {
+            total: 0,
+            eventbrite: 0,
+            ticketmaster: 0,
+            duplicatesRemoved: 0,
+            newEvents: 0,
+            errors: results.errors,
+            saved: false,
+            message: 'No CSE events found from external APIs'
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Error in fetchAndSaveEvents:', error);
+      throw error;
+    }
+  }
+
+  // Fetch events from all configured APIs (without saving)
+  async fetchAllEvents() {
+    try {
+      console.log('Starting to fetch CSE events from multiple APIs...');
+      
+      const results = {
+        eventbrite: [],
+        ticketmaster: [],
+        errors: []
       };
+
+      // Fetch from Eventbrite
+      try {
+        console.log('Fetching CSE events from Eventbrite...');
+        results.eventbrite = await this.eventbriteService.fetchCSEEvents();
+        console.log(`Successfully fetched ${results.eventbrite.length} real events from Eventbrite`);
+      } catch (error) {
+        console.error('Error fetching from Eventbrite:', error);
+        results.errors.push({ source: 'eventbrite', error: error.message });
+      }
+
+      // Fetch from Ticketmaster
+      try {
+        console.log('Fetching CSE events from Ticketmaster...');
+        results.ticketmaster = await this.ticketmasterService.fetchCSEEvents();
+        console.log(`Successfully fetched ${results.ticketmaster.length} real events from Ticketmaster`);
+      } catch (error) {
+        console.error('Error fetching from Ticketmaster:', error);
+        results.errors.push({ source: 'ticketmaster', error: error.message });
+      }
+
+      // Combine all events
+      const allEvents = [...results.eventbrite, ...results.ticketmaster];
+      console.log(`Total events fetched from APIs: ${allEvents.length}`);
+
+      if (allEvents.length > 0) {
+        // Remove duplicates
+        const uniqueEvents = this.removeDuplicates(allEvents);
+        console.log(`Unique events after deduplication: ${uniqueEvents.length}`);
+
+        // Get existing events to filter out already saved events
+        const existingEvents = await this.dataService.loadEvents();
+        
+        // Filter out events that already exist in the system
+        const newEvents = uniqueEvents.filter(newEvent => {
+          return !existingEvents.some(existing => 
+            existing.sourceId === newEvent.sourceId && existing.source === newEvent.source
+          );
+        });
+
+        console.log(`${newEvents.length} new events available for approval (${uniqueEvents.length - newEvents.length} already in system)`);
+
+        // Sort by date
+        const sortedEvents = this.sortEventsByDate(newEvents);
+
+        return {
+          events: sortedEvents,
+          summary: {
+            total: sortedEvents.length,
+            eventbrite: results.eventbrite.length,
+            ticketmaster: results.ticketmaster.length,
+            duplicatesRemoved: allEvents.length - uniqueEvents.length,
+            alreadyExists: uniqueEvents.length - newEvents.length,
+            errors: results.errors,
+            saved: false
+          }
+        };
+      } else {
+        return {
+          events: [],
+          summary: {
+            total: 0,
+            eventbrite: 0,
+            ticketmaster: 0,
+            duplicatesRemoved: 0,
+            alreadyExists: 0,
+            errors: results.errors,
+            saved: false,
+            message: 'No CSE events found from external APIs'
+          }
+        };
+      }
     } catch (error) {
       console.error('Error in fetchAllEvents:', error);
+      throw error;
+    }
+  }
+
+  // Save approved events to file
+  async saveApprovedEvents(approvedEvents) {
+    try {
+      console.log(`Saving ${approvedEvents.length} approved events...`);
+      
+      // Get existing events from file
+      const existingEvents = await this.dataService.loadEvents();
+      
+      // Filter out events that already exist (check by sourceId to avoid duplicates)
+      const newApprovedEvents = approvedEvents.filter(newEvent => {
+        return !existingEvents.some(existing => 
+          existing.sourceId === newEvent.sourceId && existing.source === newEvent.source
+        );
+      });
+
+      console.log(`${newApprovedEvents.length} new events to add (${approvedEvents.length - newApprovedEvents.length} duplicates skipped)`);
+
+      // Add new approved events to existing events
+      const combinedEvents = [...existingEvents, ...newApprovedEvents];
+      
+      // Save to file
+      await this.dataService.saveEvents(combinedEvents);
+      console.log(`Saved ${combinedEvents.length} total events to file (added ${newApprovedEvents.length} new approved events)`);
+
+      return {
+        success: true,
+        totalSaved: combinedEvents.length,
+        existingEvents: existingEvents.length,
+        newApprovedEvents: newApprovedEvents.length,
+        duplicatesSkipped: approvedEvents.length - newApprovedEvents.length
+      };
+    } catch (error) {
+      console.error('Error saving approved events:', error);
       throw error;
     }
   }

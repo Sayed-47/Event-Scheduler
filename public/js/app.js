@@ -4,6 +4,7 @@ class EventSchedulerApp {
     this.filteredEvents = [];
     this.currentView = 'grid';
     this.editingEventId = null;
+    this.pendingEvents = []; // Events waiting for approval
     
     this.init();
   }
@@ -18,9 +19,14 @@ class EventSchedulerApp {
     // Modal events
     document.getElementById('addEventBtn').addEventListener('click', () => this.openModal());
     document.getElementById('fetchEventsBtn').addEventListener('click', () => this.fetchExternalEvents());
+    document.getElementById('approveEventsBtn').addEventListener('click', () => this.approveSelectedEvents());
     document.getElementById('modalClose').addEventListener('click', () => this.closeModal());
     document.getElementById('cancelBtn').addEventListener('click', () => this.closeModal());
     document.getElementById('eventForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
+
+    // Approval section events
+    document.getElementById('selectAllBtn').addEventListener('click', () => this.selectAllEvents());
+    document.getElementById('deselectAllBtn').addEventListener('click', () => this.deselectAllEvents());
 
     // Search and filter events
     document.getElementById('searchInput').addEventListener('input', (e) => this.handleSearch(e.target.value));
@@ -70,24 +76,156 @@ class EventSchedulerApp {
   async fetchExternalEvents() {
     try {
       this.showLoading(true);
-      this.showNotification('Fetching events from external APIs...', 'info');
+      this.showNotification('Fetching CSE events from external APIs...', 'info');
       
       const response = await fetch('/api/fetch-events', { method: 'POST' });
       
       if (response.ok) {
         const result = await response.json();
-        this.showNotification(`Fetched ${result.newEvents} new events from external APIs`, 'success');
-        await this.loadEvents(); // Reload events to show new ones
+        if (result.events && result.events.length > 0) {
+          this.pendingEvents = result.events;
+          this.showApprovalSection();
+          let message = `Found ${result.events.length} new CSE events for review!`;
+          if (result.summary.alreadyExists > 0) {
+            message += ` (${result.summary.alreadyExists} events already in your schedule)`;
+          }
+          this.showNotification(message, 'success');
+        } else {
+          this.hideApprovalSection();
+          let message = 'No new CSE events found';
+          if (result.summary.alreadyExists > 0) {
+            message = `No new events found - all ${result.summary.alreadyExists} fetched events are already in your schedule`;
+          }
+          this.showNotification(message, 'info');
+        }
       } else {
         const error = await response.json();
+        this.hideApprovalSection();
         this.showNotification(error.error || 'Failed to fetch external events', 'error');
       }
     } catch (error) {
       console.error('Error fetching external events:', error);
-      this.showNotification('Error fetching external events', 'error');
+      this.hideApprovalSection();
+      this.showNotification('Error fetching CSE events from external APIs', 'error');
     } finally {
       this.showLoading(false);
     }
+  }
+
+  async approveSelectedEvents() {
+    try {
+      const checkboxes = document.querySelectorAll('.event-approval-checkbox:checked');
+      const approvedEvents = Array.from(checkboxes).map(checkbox => {
+        const eventIndex = parseInt(checkbox.dataset.eventIndex);
+        return this.pendingEvents[eventIndex];
+      });
+
+      if (approvedEvents.length === 0) {
+        this.showNotification('Please select at least one event to approve', 'warning');
+        return;
+      }
+
+      this.showLoading(true);
+      this.showNotification(`Approving ${approvedEvents.length} selected events...`, 'info');
+
+      const response = await fetch('/api/approve-events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ approvedEvents })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        this.showNotification(result.message, 'success');
+        this.hideApprovalSection();
+        this.pendingEvents = [];
+        await this.loadEvents(); // Reload to show all events including newly approved ones
+      } else {
+        const error = await response.json();
+        this.showNotification(error.error || 'Failed to approve events', 'error');
+      }
+    } catch (error) {
+      console.error('Error approving events:', error);
+      this.showNotification('Error approving events', 'error');
+    } finally {
+      this.showLoading(false);
+    }
+  }
+
+  showApprovalSection() {
+    const approvalSection = document.getElementById('approvalSection');
+    const approveBtn = document.getElementById('approveEventsBtn');
+    const approvalEvents = document.getElementById('approvalEvents');
+
+    // Show approval section and button
+    approvalSection.style.display = 'block';
+    approveBtn.style.display = 'inline-flex';
+
+    // Render pending events for approval
+    approvalEvents.innerHTML = this.pendingEvents.map((event, index) => this.createApprovalEventCard(event, index)).join('');
+
+    // Scroll to approval section
+    approvalSection.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  hideApprovalSection() {
+    const approvalSection = document.getElementById('approvalSection');
+    const approveBtn = document.getElementById('approveEventsBtn');
+
+    approvalSection.style.display = 'none';
+    approveBtn.style.display = 'none';
+    this.pendingEvents = [];
+  }
+
+  createApprovalEventCard(event, index) {
+    const eventDate = new Date(event.datetime || event.date);
+    const formattedDate = eventDate.toLocaleDateString();
+    const formattedTime = event.time || eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    return `
+      <div class="approval-event-card">
+        <div class="approval-checkbox">
+          <input type="checkbox" class="event-approval-checkbox" data-event-index="${index}" id="event-${index}">
+          <label for="event-${index}"></label>
+        </div>
+        <div class="approval-event-content">
+          <div class="approval-event-header">
+            <h4 class="approval-event-title">${event.title}</h4>
+            <span class="approval-event-source">${event.source}</span>
+          </div>
+          <div class="approval-event-meta">
+            <div class="approval-meta-item">
+              <i class="fas fa-calendar"></i>
+              <span>${formattedDate}</span>
+            </div>
+            <div class="approval-meta-item">
+              <i class="fas fa-clock"></i>
+              <span>${formattedTime}</span>
+            </div>
+            ${event.location ? `
+              <div class="approval-meta-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${event.location}</span>
+              </div>
+            ` : ''}
+          </div>
+          ${event.description ? `<p class="approval-event-description">${event.description.substring(0, 150)}${event.description.length > 150 ? '...' : ''}</p>` : ''}
+          ${event.url ? `<a href="${event.url}" target="_blank" rel="noopener noreferrer" class="approval-event-link">View Event Details</a>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  selectAllEvents() {
+    const checkboxes = document.querySelectorAll('.event-approval-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+  }
+
+  deselectAllEvents() {
+    const checkboxes = document.querySelectorAll('.event-approval-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
   }
 
   async saveEvent(eventData) {
@@ -347,10 +485,18 @@ class EventSchedulerApp {
   renderEvents() {
     const container = document.getElementById('eventsContainer');
     const emptyState = document.getElementById('emptyState');
+    const emptyStateMessage = document.getElementById('emptyStateMessage');
 
     if (this.filteredEvents.length === 0) {
       container.innerHTML = '';
       emptyState.style.display = 'block';
+      
+      // Update message based on whether we have any events at all
+      if (this.events.length === 0) {
+        emptyStateMessage.textContent = 'No events available. Add your first event or fetch CSE events from external APIs.';
+      } else {
+        emptyStateMessage.textContent = 'No events match your current filters. Try adjusting your search or filters.';
+      }
       return;
     }
 
