@@ -1,52 +1,299 @@
-{
-  "timestamp": "2025-06-22T19:45:48.410Z",
-  "version": "1.0",
-  "totalEvents": 5,
-  "events": [
-    {
-      "id": 1,
-      "title": "International University Programming Contest (IUPC)",
-      "date": "2025-07-15T10:00:00.000Z",
-      "location": "NSU Auditorium",
-      "description": "Annual programming contest for university students featuring algorithmic challenges",
-      "source": "Facebook",
-      "createdAt": "2024-12-19T10:30:00.000Z"
+[
+  {
+    "id": "495e0af4-cfb7-4718-9142-43bef69fc1be",
+    "title": "BUP IUPC",
+    "description": "sdjsdsjdsld",
+    "date": "2025-06-23",
+    "time": "12:00",
+    "location": "BUP, Dhaka",
+    "category": "technology",
+    "url": "https://bup.edu.bd/iupc",
+    "datetime": "2025-06-23T12:00:00.000Z",
+    "createdAt": "2025-06-23T06:57:31.754Z",
+    "updatedAt": "2025-06-23T06:57:31.754Z"
+  },
+  {
+    "id": "1d3c05d8-8d42-491a-9bc0-45acd8845d95",
+    "title": "Advanced Machine Learning Workshop for Computer Scientists",
+    "description": "Join us for an intensive workshop covering advanced machine learning techniques.",
+    "date": "2025-06-30",
+    "time": "13:00",
+    "datetime": "2025-06-30T07:00:30.321Z",
+    "location": "Tech Innovation Center, San Francisco, CA",
+    "category": "workshop",
+    "url": "https://eventbrite.com/e/ml-workshop-001",
+    "source": "eventbrite",
+    "sourceId": "eb_001",
+    "isOnline": false,
+    "createdAt": "2025-06-23T07:00:30.367Z",
+    "updatedAt": "2025-06-23T07:00:30.367Z"
+  },
+  {
+    "id": "4f550d79-20a7-4fa2-9e9d-968b0a5fb8db",
+    "title": "TechCrunch Disrupt 2024: Innovation Summit",
+    "description": "The premier technology conference featuring cutting-edge startups, industry leaders, and breakthrough innovations in computer science and engineering.",
+    "date": "2025-07-03",
+    "time": "13:00",
+    "datetime": "2025-07-03T07:00:30.333Z",
+    "location": "Moscone Center, San Francisco, CA",
+    "category": "education",
+    "url": "https://ticketmaster.com/techcrunch-disrupt-001",
+    "source": "ticketmaster",
+    "sourceId": "tm_001",
+    "priceRange": "$299 - $899",
+    "ticketmasterData": {
+      "promoterId": "prom_001",
+      "segment": "Arts & Theatre",
+      "genre": "Technology",
+      "status": "onsale"
     },
-    {
-      "id": 2,
-      "title": "Tech Summit 2025: Future of AI",
-      "date": "2025-07-01T09:00:00.000Z",
-      "location": "BUET Campus",
-      "description": "Technology summit featuring industry leaders discussing the future of artificial intelligence",
-      "source": "Website",
-      "createdAt": "2024-12-19T10:30:00.000Z"
+    "createdAt": "2025-06-23T07:00:30.367Z",
+    "updatedAt": "2025-06-23T07:00:30.367Z"
+  },
+  {
+    "id": "9893d77e-e1fb-438f-8a3e-e6d1f4aea5f3",
+    "title": "Full Stack Development Conference 2024",
+    "description": "A comprehensive conference for full stack developers.",
+    "date": "2025-07-07",
+    "time": "13:00",
+    "datetime": "2025-07-07T07:00:30.321Z",
+    "location": "Convention Center West, Seattle, WA",
+    "category": "conference",
+    "url": "https://eventbrite.com/e/fullstack-conf-002",
+    "source": "eventbrite",
+    "sourceId": "eb_002",
+    "isOnline": false,
+    "createdAt": "2025-06-23T07:00:30.367Z",
+    "updatedAt": "2025-06-23T07:00:30.368Z"
+  },
+  {
+    "id": "a1781fa5-dbac-4fe2-bf00-a1694101d30a",
+    "title": "AI & Machine Learning Expo 2024",
+    "description": "Explore the latest advances in artificial intelligence and machine learning with hands-on workshops and expert presentations.",
+    "date": "2025-07-11",
+    "time": "13:00",
+    "datetime": "2025-07-11T07:00:30.333Z",
+    "location": "Boston Convention Center, Boston, MA",
+    "category": "education",
+    "url": "https://ticketmaster.com/ai-ml-expo-002",
+    "source": "ticketmaster",
+    "sourceId": "tm_002",
+    "priceRange": "$150 - $450",
+    "ticketmasterData": {
+      "promoterId": "prom_002",
+      "segment": "Arts & Theatre",
+      "genre": "Educational",
+      "status": "onsale"
     },
-    {
-      "id": 4,
-      "title": "Full Stack Development Bootcamp",
-      "date": "2025-06-25T10:00:00.000Z",
-      "location": "Online Platform",
-      "description": "Intensive coding bootcamp covering modern web development technologies",
-      "source": "Facebook",
-      "createdAt": "2024-12-19T10:30:00.000Z"
+    "createdAt": "2025-06-23T07:00:30.368Z",
+    "updatedAt": "2025-06-23T07:00:30.368Z"
+  },
+  {
+    "id": "4ec87e16-0248-4dd6-97b9-539166fd2b16",
+    "title": "Women in Tech Leadership Conference",
+    "description": "Empowering women in technology with leadership workshops, networking opportunities, and inspiring keynote speakers from top tech companies.",
+    "date": "2025-07-13",
+    "time": "13:00",
+    "datetime": "2025-07-13T07:00:30.333Z",
+    "location": "Chicago Convention Center, Chicago, IL",
+    "category": "education",
+    "url": "https://ticketmaster.com/women-tech-005",
+    "source": "ticketmaster",
+    "sourceId": "tm_005",
+    "priceRange": "$100 - $350",
+    "ticketmasterData": {
+      "promoterId": "prom_005",
+      "segment": "Arts & Theatre",
+      "genre": "Conference",
+      "status": "onsale"
     },
-    {
-      "id": 5,
-      "title": "hello",
-      "date": "2025-06-25T21:02:00.000Z",
-      "location": "efe",
-      "description": "efefef",
-      "source": "Website",
-      "createdAt": "2025-06-22T19:39:52.957Z"
+    "createdAt": "2025-06-23T07:00:30.368Z",
+    "updatedAt": "2025-06-23T07:00:30.368Z"
+  },
+  {
+    "id": "45392419-6b74-4ea7-a454-1670c4eb61a2",
+    "title": "Cybersecurity Career Fair & Workshop",
+    "description": "Connect with top cybersecurity employers and attend practical workshops on penetration testing, threat analysis, and security architecture.",
+    "date": "2025-07-18",
+    "time": "13:00",
+    "datetime": "2025-07-18T07:00:30.333Z",
+    "location": "Austin Convention Center, Austin, TX",
+    "category": "workshop",
+    "url": "https://ticketmaster.com/cybersec-fair-003",
+    "source": "ticketmaster",
+    "sourceId": "tm_003",
+    "priceRange": "$0",
+    "ticketmasterData": {
+      "promoterId": "prom_003",
+      "segment": "Miscellaneous",
+      "genre": "Career",
+      "status": "onsale"
     },
-    {
-      "id": 6,
-      "title": "DevFest Bangladesh 2025",
-      "date": "2025-09-15T08:00:00.000Z",
-      "location": "International Convention City Bashundhara",
-      "description": "Google Developer Group's annual technology festival",
-      "source": "Facebook",
-      "createdAt": "2025-06-22T19:45:48.398Z"
-    }
-  ]
-}
+    "createdAt": "2025-06-23T07:00:30.371Z",
+    "updatedAt": "2025-06-23T07:00:30.371Z"
+  },
+  {
+    "id": "c883e903-18bd-4e9b-a15f-20e79cf02ead",
+    "title": "Open Source Software Summit",
+    "description": "Join the open source community for talks, workshops, and collaboration opportunities. Perfect for developers and computer science students.",
+    "date": "2025-07-25",
+    "time": "13:00",
+    "datetime": "2025-07-25T07:00:30.333Z",
+    "location": "Oregon Convention Center, Portland, OR",
+    "category": "education",
+    "url": "https://ticketmaster.com/oss-summit-004",
+    "source": "ticketmaster",
+    "sourceId": "tm_004",
+    "priceRange": "$50 - $200",
+    "ticketmasterData": {
+      "promoterId": "prom_004",
+      "segment": "Arts & Theatre",
+      "genre": "Technology",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-23T07:00:30.371Z",
+    "updatedAt": "2025-06-23T07:00:30.371Z"
+  },
+  {
+    "id": "f491f31b-b5f8-434a-9b1d-b5c51cc68039",
+    "title": "Advanced Machine Learning Workshop for Computer Scientists",
+    "description": "Join us for an intensive workshop covering advanced machine learning techniques.",
+    "date": "2025-07-06",
+    "time": "22:05",
+    "datetime": "2025-07-06T16:05:35.842Z",
+    "location": "Tech Innovation Center, San Francisco, CA",
+    "category": "workshop",
+    "url": "https://eventbrite.com/e/ml-workshop-001",
+    "source": "eventbrite",
+    "sourceId": "eb_001",
+    "isOnline": false,
+    "createdAt": "2025-06-29T16:05:35.894Z",
+    "updatedAt": "2025-06-29T16:05:35.894Z"
+  },
+  {
+    "id": "316a3630-4736-418c-bd6f-bbc8e12fe835",
+    "title": "TechCrunch Disrupt 2024: Innovation Summit",
+    "description": "The premier technology conference featuring cutting-edge startups, industry leaders, and breakthrough innovations in computer science and engineering.",
+    "date": "2025-07-09",
+    "time": "22:05",
+    "datetime": "2025-07-09T16:05:35.852Z",
+    "location": "Moscone Center, San Francisco, CA",
+    "category": "education",
+    "url": "https://ticketmaster.com/techcrunch-disrupt-001",
+    "source": "ticketmaster",
+    "sourceId": "tm_001",
+    "priceRange": "$299 - $899",
+    "ticketmasterData": {
+      "promoterId": "prom_001",
+      "segment": "Arts & Theatre",
+      "genre": "Technology",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-29T16:05:35.894Z",
+    "updatedAt": "2025-06-29T16:05:35.894Z"
+  },
+  {
+    "id": "54d68569-63cb-4c18-bd40-fcb79e885c7e",
+    "title": "Full Stack Development Conference 2024",
+    "description": "A comprehensive conference for full stack developers.",
+    "date": "2025-07-13",
+    "time": "22:05",
+    "datetime": "2025-07-13T16:05:35.842Z",
+    "location": "Convention Center West, Seattle, WA",
+    "category": "conference",
+    "url": "https://eventbrite.com/e/fullstack-conf-002",
+    "source": "eventbrite",
+    "sourceId": "eb_002",
+    "isOnline": false,
+    "createdAt": "2025-06-29T16:05:35.895Z",
+    "updatedAt": "2025-06-29T16:05:35.895Z"
+  },
+  {
+    "id": "04885127-7530-499a-aa0b-a0849ca7196c",
+    "title": "AI & Machine Learning Expo 2024",
+    "description": "Explore the latest advances in artificial intelligence and machine learning with hands-on workshops and expert presentations.",
+    "date": "2025-07-17",
+    "time": "22:05",
+    "datetime": "2025-07-17T16:05:35.852Z",
+    "location": "Boston Convention Center, Boston, MA",
+    "category": "education",
+    "url": "https://ticketmaster.com/ai-ml-expo-002",
+    "source": "ticketmaster",
+    "sourceId": "tm_002",
+    "priceRange": "$150 - $450",
+    "ticketmasterData": {
+      "promoterId": "prom_002",
+      "segment": "Arts & Theatre",
+      "genre": "Educational",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-29T16:05:35.895Z",
+    "updatedAt": "2025-06-29T16:05:35.895Z"
+  },
+  {
+    "id": "a81e3bd2-27e4-488f-957a-2fef45484b78",
+    "title": "Women in Tech Leadership Conference",
+    "description": "Empowering women in technology with leadership workshops, networking opportunities, and inspiring keynote speakers from top tech companies.",
+    "date": "2025-07-19",
+    "time": "22:05",
+    "datetime": "2025-07-19T16:05:35.852Z",
+    "location": "Chicago Convention Center, Chicago, IL",
+    "category": "education",
+    "url": "https://ticketmaster.com/women-tech-005",
+    "source": "ticketmaster",
+    "sourceId": "tm_005",
+    "priceRange": "$100 - $350",
+    "ticketmasterData": {
+      "promoterId": "prom_005",
+      "segment": "Arts & Theatre",
+      "genre": "Conference",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-29T16:05:35.895Z",
+    "updatedAt": "2025-06-29T16:05:35.895Z"
+  },
+  {
+    "id": "e647c17e-242b-4b3e-94ae-9ce82a628e20",
+    "title": "Cybersecurity Career Fair & Workshop",
+    "description": "Connect with top cybersecurity employers and attend practical workshops on penetration testing, threat analysis, and security architecture.",
+    "date": "2025-07-24",
+    "time": "22:05",
+    "datetime": "2025-07-24T16:05:35.852Z",
+    "location": "Austin Convention Center, Austin, TX",
+    "category": "workshop",
+    "url": "https://ticketmaster.com/cybersec-fair-003",
+    "source": "ticketmaster",
+    "sourceId": "tm_003",
+    "priceRange": "$0",
+    "ticketmasterData": {
+      "promoterId": "prom_003",
+      "segment": "Miscellaneous",
+      "genre": "Career",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-29T16:05:35.895Z",
+    "updatedAt": "2025-06-29T16:05:35.895Z"
+  },
+  {
+    "id": "03e453ab-3eac-4806-86b7-86d47a0945c5",
+    "title": "Open Source Software Summit",
+    "description": "Join the open source community for talks, workshops, and collaboration opportunities. Perfect for developers and computer science students.",
+    "date": "2025-07-31",
+    "time": "22:05",
+    "datetime": "2025-07-31T16:05:35.852Z",
+    "location": "Oregon Convention Center, Portland, OR",
+    "category": "education",
+    "url": "https://ticketmaster.com/oss-summit-004",
+    "source": "ticketmaster",
+    "sourceId": "tm_004",
+    "priceRange": "$50 - $200",
+    "ticketmasterData": {
+      "promoterId": "prom_004",
+      "segment": "Arts & Theatre",
+      "genre": "Technology",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-29T16:05:35.895Z",
+    "updatedAt": "2025-06-29T16:05:35.895Z"
+  }
+]

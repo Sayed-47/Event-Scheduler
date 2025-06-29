@@ -1,209 +1,114 @@
-import express from 'express';
-import EventScheduler from '../Models/EventScheduler.js';
-import dataService from '../services/dataService.js';
-
+const express = require('express');
 const router = express.Router();
-const scheduler = new EventScheduler();
+const DataService = require('../services/dataService');
 
-let isInitialized = false;
+const dataService = new DataService();
 
-async function initializeScheduler() {
-    if (!isInitialized) {
-        try {
-            const data = await dataService.loadEvents();
-            scheduler.loadEvents(data);
-            isInitialized = true;
-            console.log(`📊 Loaded ${data.events.length} events`);
-        } catch (error) {
-            console.error('Error initializing scheduler:', error);
-        }
-    }
-}
-
-// Get all events
+// GET /api/events - Get all events
 router.get('/', async (req, res) => {
-    try {
-        await initializeScheduler();
-        
-        const { search, sort, startDate, endDate, source } = req.query;
-        let events = scheduler.events;
-
-        if (search) {
-            events = scheduler.search(search);
-        }
-
-        if (startDate && endDate) {
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            events = scheduler.getEventsInDateRange(start, end);
-        }
-
-        if (source && source !== 'all') {
-            events = events.filter(event => event.source === source);
-        }
-
-        if (sort) {
-            const sortedEvents = [...events];
-            switch (sort) {
-                case 'date':
-                    sortedEvents.sort((a, b) => a.date - b.date);
-                    break;
-                case 'title':
-                    sortedEvents.sort((a, b) => a.title.localeCompare(b.title));
-                    break;
-                case 'location':
-                    sortedEvents.sort((a, b) => a.location.localeCompare(b.location));
-                    break;
-                case 'source':
-                    sortedEvents.sort((a, b) => a.source.localeCompare(b.source));
-                    break;
-                default:
-                    sortedEvents.sort((a, b) => a.date - b.date);
-            }
-            events = sortedEvents;
-        }
-
-        res.json({
-            success: true,
-            data: events,
-            total: events.length
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching events',
-            error: error.message
-        });
-    }
+  try {
+    const events = await dataService.loadEvents();
+    res.json(events);
+  } catch (error) {
+    console.error('Error getting events:', error);
+    res.status(500).json({ error: 'Failed to retrieve events' });
+  }
 });
 
-// Add new event
+// GET /api/events/:id - Get event by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const event = await dataService.getEvent(req.params.id);
+    res.json(event);
+  } catch (error) {
+    console.error('Error getting event:', error);
+    if (error.message === 'Event not found') {
+      res.status(404).json({ error: 'Event not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to retrieve event' });
+    }
+  }
+});
+
+// POST /api/events - Create new event
 router.post('/', async (req, res) => {
-    console.log('POST /api/events called with body:', req.body);
-    try {
-        await initializeScheduler();
-        
-        const { title, dateTime, location, description, source } = req.body;
-
-        if (!title || !dateTime || !location || !source) {
-            console.log('Missing required fields');
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required fields: title, dateTime, location, source'
-            });
-        }
-
-        const eventDate = new Date(dateTime);
-        if (eventDate < new Date()) {
-            return res.status(400).json({
-                success: false,
-                message: 'Event date must be in the future'
-            });
-        }
-
-        const eventData = {
-            title,
-            dateTime,
-            location,
-            description: description || 'No description provided',
-            source
-        };        const newEvent = scheduler.addEvent(eventData);
-        console.log('Event added to scheduler:', newEvent);
-        
-        await dataService.saveEvents(scheduler.getAllEvents());
-        console.log('Events saved to file');
-
-        console.log('Event created successfully:', newEvent);
-        res.status(201).json({
-            success: true,
-            message: 'Event created successfully',
-            data: newEvent
-        });
-    } catch (error) {
-        console.error('Detailed error creating event:', error);
-        console.error('Error stack:', error.stack);
-        res.status(500).json({
-            success: false,
-            message: 'Error creating event',
-            error: error.message
-        });
+  try {
+    // Validate required fields
+    const { title, date } = req.body;
+    if (!title || !date) {
+      return res.status(400).json({ 
+        error: 'Title and date are required fields' 
+      });
     }
+
+    // Validate event data
+    const validation = dataService.validateEventData(req.body);
+    if (!validation.isValid) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: validation.errors 
+      });
+    }
+
+    // Check for duplicates
+    const isDuplicate = await dataService.isDuplicate(req.body);
+    if (isDuplicate) {
+      return res.status(409).json({ 
+        error: 'An event with the same title, date, and location already exists' 
+      });
+    }
+
+    // Create the event
+    const newEvent = await dataService.addEvent(req.body);
+    res.status(201).json(newEvent);
+  } catch (error) {
+    console.error('Error creating event:', error);
+    res.status(500).json({ error: 'Failed to create event' });
+  }
 });
 
-// Delete event
+// PUT /api/events/:id - Update event
+router.put('/:id', async (req, res) => {
+  try {
+    // Validate event data if provided
+    if (Object.keys(req.body).length > 0) {
+      const validation = dataService.validateEventData(req.body);
+      if (!validation.isValid) {
+        return res.status(400).json({ 
+          error: 'Validation failed', 
+          details: validation.errors 
+        });
+      }
+    }
+
+    const updatedEvent = await dataService.updateEvent(req.params.id, req.body);
+    res.json(updatedEvent);
+  } catch (error) {
+    console.error('Error updating event:', error);
+    if (error.message === 'Event not found') {
+      res.status(404).json({ error: 'Event not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to update event' });
+    }
+  }
+});
+
+// DELETE /api/events/:id - Delete event
 router.delete('/:id', async (req, res) => {
-    try {
-        await initializeScheduler();
-        
-        const eventId = parseInt(req.params.id);
-        const deleted = scheduler.deleteEvent(eventId);
-
-        if (!deleted) {
-            return res.status(404).json({
-                success: false,
-                message: 'Event not found'
-            });
-        }
-
-        await dataService.saveEvents(scheduler.getAllEvents());
-
-        res.json({
-            success: true,
-            message: 'Event deleted successfully'
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error deleting event',
-            error: error.message
-        });
+  try {
+    const deletedEvent = await dataService.deleteEvent(req.params.id);
+    res.json({ 
+      message: 'Event deleted successfully', 
+      event: deletedEvent 
+    });
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    if (error.message === 'Event not found') {
+      res.status(404).json({ error: 'Event not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to delete event' });
     }
+  }
 });
 
-// Get statistics
-router.get('/stats/summary', async (req, res) => {
-    try {
-        await initializeScheduler();
-        
-        const stats = scheduler.getStats();
-        
-        res.json({
-            success: true,
-            data: stats
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching statistics',
-            error: error.message
-        });
-    }
-});
-
-// Export events as JSON
-router.get('/export/json', async (req, res) => {
-    try {
-        await initializeScheduler();
-        
-        const events = scheduler.getAllEvents();
-        const exportData = {
-            exportDate: new Date().toISOString(),
-            totalEvents: events.length,
-            events: events
-        };
-
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Content-Disposition', `attachment; filename="events_export_${new Date().toISOString().split('T')[0]}.json"`);
-        
-        res.json(exportData);
-    } catch (error) {
-        console.error('Error exporting events:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error exporting events',
-            error: error.message
-        });
-    }
-});
-
-export default router;
+module.exports = router;

@@ -3,107 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Scheduler - Node.js DSA Project</title>
+    <title>EventX - Professional Event Scheduler</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/modal.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Event Scheduler</h1>
-            <p>Powered by Node.js & DSA Algorithms for Maximum Efficiency</p>
-        </div>
-
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number" id="totalEvents">0</div>
-                <div class="stat-label">Total Events</div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-calendar-alt"></i>
+                <span>EventX</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="upcomingEvents">0</div>
-                <div class="stat-label">Upcoming</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="todayEvents">0</div>
-                <div class="stat-label">Today</div>
+            <div class="nav-actions">
+                <button class="btn btn-primary" id="addEventBtn">
+                    <i class="fas fa-plus"></i>
+                    Add Event
+                </button>
+                <button class="btn btn-secondary" id="fetchEventsBtn">
+                    <i class="fas fa-download"></i>
+                    Fetch Events
+                </button>
             </div>
         </div>
+    </nav>
 
-        <div class="controls">
-            <div class="search-container">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search events by title, location, or source...">
-                <span class="search-icon">🔍</span>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Stats Dashboard -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalEvents">0</h3>
+                        <p>Total Events</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="upcomingEvents">0</h3>
+                        <p>Upcoming</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="eventCategories">0</h3>
+                        <p>Categories</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="apiEvents">0</h3>
+                        <p>API Events</p>
+                    </div>
+                </div>
             </div>
-            <select class="sort-select" id="sortSelect">
-                <option value="date">Sort by Date</option>
-                <option value="title">Sort by Title</option>
-                <option value="location">Sort by Location</option>
-                <option value="source">Sort by Source</option>
-            </select>
-            <button class="btn btn-primary" onclick="openAddEventModal()">Add Event</button>
-            <button class="btn btn-secondary" onclick="fetchEvents()">Fetch External</button>
-        </div>
+        </section>
 
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Loading events...</p>
-        </div>
-
-        <div class="events-grid" id="eventsGrid">
-            <div class="no-events">
-                <h3>No events found</h3>
-                <p>Add some events to get started!</p>
+        <!-- Filters and Search -->
+        <section class="filters-section">
+            <div class="filters-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search events...">
+                </div>
+                <div class="filter-group">
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="technology">Technology</option>
+                        <option value="business">Business</option>
+                        <option value="education">Education</option>
+                        <option value="networking">Networking</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="conference">Conference</option>
+                    </select>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="import-export-controls">
-            <button class="btn btn-secondary" onclick="exportEvents()">📁 Export Events</button>
-            <label for="importFile" class="file-label">📥 Import Events</label>
-            <input type="file" id="importFile" class="file-input" accept=".json" onchange="importEvents(event)">
+        <!-- Events Grid -->
+        <section class="events-section">
+            <div class="section-header">
+                <h2>Events</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="events-container" id="eventsContainer">
+                <!-- Events will be dynamically loaded here -->
+            </div>
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-calendar-times"></i>
+                <h3>No Events Found</h3>
+                <p>Start by adding your first event or fetch events from external APIs</p>
+                <button class="btn btn-primary" onclick="document.getElementById('addEventBtn').click()">
+                    <i class="fas fa-plus"></i>
+                    Add Event
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Event Modal -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Event</h2>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="eventForm" class="modal-body">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title *</label>
+                    <input type="text" id="eventTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Date *</label>
+                        <input type="date" id="eventDate" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Time *</label>
+                        <input type="time" id="eventTime" name="time" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventLocation">Location</label>
+                        <input type="text" id="eventLocation" name="location">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventCategory">Category</label>
+                        <select id="eventCategory" name="category">
+                            <option value="technology">Technology</option>
+                            <option value="business">Business</option>
+                            <option value="education">Education</option>
+                            <option value="networking">Networking</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="conference">Conference</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="eventUrl">Event URL</label>
+                    <input type="url" id="eventUrl" name="url">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Save Event</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Add Event Modal -->
-    <div class="modal" id="addEventModal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeAddEventModal()">&times;</button>
-            <h2>Add New Event</h2>
-            <form id="eventForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" for="eventTitle">Event Title</label>
-                        <input type="text" class="form-input" id="eventTitle" placeholder="Enter event title" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="eventDateTime">Date & Time</label>
-                        <input type="datetime-local" class="form-input" id="eventDateTime" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="eventLocation">Location</label>
-                        <input type="text" class="form-input" id="eventLocation" placeholder="Enter event location" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="eventSource">Source</label>
-                        <select class="form-input" id="eventSource" required>
-                            <option value="">Select source</option>
-                            <option value="Manual">Manual Entry</option>
-                            <option value="Facebook">Facebook</option>
-                            <option value="Website">Website</option>
-                            <option value="Email">Email</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label" for="eventDescription">Description</label>
-                        <textarea class="form-input" id="eventDescription" rows="3" placeholder="Enter event description (optional)"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeAddEventModal()">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Event</button>
-                    </div>
-                </div>
-            </form>
+    <!-- Notifications -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading events...</p>
         </div>
     </div>
 
