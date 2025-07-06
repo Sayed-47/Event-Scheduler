@@ -90,6 +90,166 @@ router.post('/approve-events', async (req, res) => {
   }
 });
 
+// GET /api/search - Advanced search with multiple criteria
+router.get('/search', async (req, res) => {
+  try {
+    const {
+      q: query = '',
+      category = '',
+      location = '',
+      dateFrom = '',
+      dateTo = '',
+      fuzzy = 'false',
+      sortBy = 'date',
+      sortOrder = 'asc',
+      limit = '50'
+    } = req.query;
+
+    const scheduler = await dataService.getEventScheduler();
+    
+    const searchCriteria = {
+      query,
+      category,
+      location,
+      dateFrom,
+      dateTo,
+      fuzzy: fuzzy === 'true',
+      sortBy,
+      sortOrder
+    };
+
+    const results = scheduler.advancedSearch(searchCriteria);
+    const limitedResults = results.slice(0, parseInt(limit));
+
+    res.json({
+      query: searchCriteria,
+      totalResults: results.length,
+      results: limitedResults,
+      hasMore: results.length > parseInt(limit)
+    });
+  } catch (error) {
+    console.error('Error in advanced search:', error);
+    res.status(500).json({ error: 'Search failed', details: error.message });
+  }
+});
+
+// GET /api/search/suggestions - Get autocomplete suggestions
+router.get('/search/suggestions', async (req, res) => {
+  try {
+    const { q: query = '', limit = '10' } = req.query;
+    
+    if (!query || query.length < 2) {
+      return res.json({ suggestions: [] });
+    }
+
+    const scheduler = await dataService.getEventScheduler();
+    const suggestions = scheduler.getAutocompleteSuggestions(query, parseInt(limit));
+
+    res.json({ suggestions });
+  } catch (error) {
+    console.error('Error getting suggestions:', error);
+    res.status(500).json({ error: 'Failed to get suggestions', details: error.message });
+  }
+});
+
+// GET /api/search/ranked - Ranked search with relevance scoring
+router.get('/search/ranked', async (req, res) => {
+  try {
+    const { q: query = '', limit = '20' } = req.query;
+    
+    if (!query) {
+      return res.status(400).json({ error: 'Query parameter is required' });
+    }
+
+    const scheduler = await dataService.getEventScheduler();
+    const results = scheduler.rankedSearch(query);
+    const limitedResults = results.slice(0, parseInt(limit));
+
+    res.json({
+      query,
+      totalResults: results.length,
+      results: limitedResults,
+      hasMore: results.length > parseInt(limit)
+    });
+  } catch (error) {
+    console.error('Error in ranked search:', error);
+    res.status(500).json({ error: 'Ranked search failed', details: error.message });
+  }
+});
+
+// GET /api/search/date - Binary search by specific date
+router.get('/search/date/:date', async (req, res) => {
+  try {
+    const { date } = req.params;
+    
+    if (!date) {
+      return res.status(400).json({ error: 'Date parameter is required' });
+    }
+
+    const scheduler = await dataService.getEventScheduler();
+    const results = scheduler.binarySearchByDate(date);
+
+    res.json({
+      date,
+      totalResults: results.length,
+      results
+    });
+  } catch (error) {
+    console.error('Error in date search:', error);
+    res.status(500).json({ error: 'Date search failed', details: error.message });
+  }
+});
+
+// GET /api/search/indexed - Fast indexed search
+router.get('/search/indexed', async (req, res) => {
+  try {
+    const { q: query = '', type = 'title' } = req.query;
+    
+    if (!query) {
+      return res.status(400).json({ error: 'Query parameter is required' });
+    }
+
+    const scheduler = await dataService.getEventScheduler();
+    const results = scheduler.indexedSearch(query, type);
+
+    res.json({
+      query,
+      type,
+      totalResults: results.length,
+      results
+    });
+  } catch (error) {
+    console.error('Error in indexed search:', error);
+    res.status(500).json({ error: 'Indexed search failed', details: error.message });
+  }
+});
+
+// GET /api/sort - Sort events with various criteria
+router.get('/sort', async (req, res) => {
+  try {
+    const { 
+      sortBy = 'date', 
+      sortOrder = 'asc',
+      limit = '50'
+    } = req.query;
+
+    const scheduler = await dataService.getEventScheduler();
+    const sortedEvents = scheduler.sortEvents(scheduler.getAllEvents(), sortBy, sortOrder);
+    const limitedResults = sortedEvents.slice(0, parseInt(limit));
+
+    res.json({
+      sortBy,
+      sortOrder,
+      totalResults: sortedEvents.length,
+      results: limitedResults,
+      hasMore: sortedEvents.length > parseInt(limit)
+    });
+  } catch (error) {
+    console.error('Error sorting events:', error);
+    res.status(500).json({ error: 'Sort failed', details: error.message });
+  }
+});
+
 // GET /api/health - Health check endpoint
 router.get('/health', async (req, res) => {
   try {

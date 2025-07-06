@@ -1,10 +1,19 @@
 const fs = require('fs').promises;
 const path = require('path');
+const EventScheduler = require('../models/EventScheduler');
 
 class DataService {
   constructor() {
     this.dataDir = path.join(__dirname, '../../data');
     this.eventsFile = path.join(this.dataDir, 'events.json');
+    this.eventScheduler = new EventScheduler();
+  }
+
+  // Get EventScheduler instance with loaded events
+  async getEventScheduler() {
+    const events = await this.loadEvents();
+    this.eventScheduler.loadEvents(events);
+    return this.eventScheduler;
   }
 
   // Ensure data directory and files exist

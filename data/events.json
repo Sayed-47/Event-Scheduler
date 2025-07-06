@@ -2,7 +2,7 @@
   {
     "id": "495e0af4-cfb7-4718-9142-43bef69fc1be",
     "title": "BUP IUPC",
-    "description": "sdjsdsjdsld",
+    "description": "Upcoming Contest",
     "date": "2025-06-23",
     "time": "12:00",
     "location": "BUP, Dhaka",
@@ -10,7 +10,7 @@
     "url": "https://bup.edu.bd/iupc",
     "datetime": "2025-06-23T12:00:00.000Z",
     "createdAt": "2025-06-23T06:57:31.754Z",
-    "updatedAt": "2025-06-23T06:57:31.754Z"
+    "updatedAt": "2025-06-30T05:57:35.056Z"
   },
   {
     "id": "5d2fac52-01f9-4026-aa11-fbd018a4fc97",
@@ -91,5 +91,84 @@
     },
     "createdAt": "2025-06-29T18:22:44.875Z",
     "updatedAt": "2025-06-29T18:22:44.875Z"
+  },
+  {
+    "id": "2941593e-49f6-4bd1-8c77-4a213288adbe",
+    "title": "San Pacho, Andruss, Facu Baez",
+    "description": "Ages 21+**PLEASE NOTE** Tickets are currently being held and will be released 3 days before your event. If you still havent received your tickets 48 hours before the event please contact info@ticketweb.comACADEMY LA IS A CASHLESS VENUEACCEPTED FORMS OF PAYMENTCredit/debit cards, Apple/Google/Samsung Pay.TABLE SERVICEPlease email vip@academy.la.ENTRY/DRESS CODEAges 21+. All sales are final.Please visit our FAQ page https://academy.la/faq/STUBHUB / VIVID SEATS / OTHER THIRD-PARTY RESELLERSAcademy ",
+    "date": "2025-07-07",
+    "time": "11:00",
+    "datetime": "2025-07-07T05:00:00.000Z",
+    "location": "Academy LA, Los Angeles, California",
+    "category": "technology",
+    "url": "https://www.ticketweb.com/event/san-pacho-andruss-facu-baez-academy-la-tickets/13772234",
+    "source": "ticketmaster",
+    "sourceId": "rZ7HnEZ1AKqwFV",
+    "priceRange": "$24.95",
+    "ticketmasterData": {
+      "promoterId": "4100",
+      "segment": "Music",
+      "genre": "Dance/Electronic",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-30T05:19:14.689Z",
+    "updatedAt": "2025-06-30T05:19:14.689Z"
+  },
+  {
+    "id": "c567c2d9-1d8f-401f-a6ce-06d12a216181",
+    "title": "Out of Space Skokie: Sylvan Esso w/ Bully and Case Oats",
+    "description": "Location:Illinois Science + Technology Park Field - 4900, Searle Parkway, Skokie. Illinois Out of Space Skokie at Illinois Science + Technology Park FieldOut of Space Skokie - Limited amount of tier 1 Pricing | Prices: $49.50 (GA) | $99.50 (VIP) | On sale April 7th at 10am CTIMPORTANT TICKETING INFORMATIONPresales start Friday, April 4 at 10am CTTickets go on sale to the general public Monday, April 7th, at 10am CTLimited amount of tier 1 Pricing: $49.50 (GA) | $99.50 (VIP)Please visit our DETAI",
+    "date": "2025-07-24",
+    "time": "05:00",
+    "datetime": "2025-07-24T23:00:00.000Z",
+    "location": "Illinois Science + Technology Park Field - Out of SPACE Skokie, Skokie, Illinois",
+    "category": "technology",
+    "url": "https://www.ticketweb.com/event/out-of-space-skokie-sylvan-illinois-science-technology-park-tickets/14304803",
+    "source": "ticketmaster",
+    "sourceId": "rZ7HnEZ1AfG7Od",
+    "priceRange": "$64.32 - $121.65",
+    "ticketmasterData": {
+      "promoterId": "6085",
+      "segment": "Music",
+      "genre": "Dance/Electronic",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-30T05:20:29.145Z",
+    "updatedAt": "2025-06-30T05:20:29.145Z"
+  },
+  {
+    "id": "017934e7-d22f-4cf4-89b5-35b1bba51036",
+    "title": "Out of Space Skokie: Shakey Graves w/ Joy Oladokun and Shovels & Rope",
+    "description": "Location:Illinois Science + Technology Park Field - 4900, Searle Parkway, Skokie. Illinois Out of Space Skokie at Illinois Science + Technology Park FieldOut of Space Skokie - Limited amount of tier 1 Pricing | Prices: $49.50 (GA) | $99.50 (VIP) | On sale April 7th at 10am CTIMPORTANT TICKETING INFORMATIONPresales start Friday, April 4 at 10am CTTickets go on sale to the general public Monday, April 7th, at 10am CTLimited amount of tier 1 Pricing: $49.50 (GA) | $99.50 (VIP)Please visit our DETAI",
+    "date": "2025-07-25",
+    "time": "05:00",
+    "datetime": "2025-07-25T23:00:00.000Z",
+    "location": "Illinois Science + Technology Park Field - Out of SPACE Skokie, Skokie, Illinois",
+    "category": "technology",
+    "url": "https://www.ticketweb.com/event/out-of-space-skokie-shakey-illinois-science-technology-park-tickets/14304833",
+    "source": "ticketmaster",
+    "sourceId": "rZ7HnEZ1AfG7OS",
+    "priceRange": "$64.32 - $121.65",
+    "ticketmasterData": {
+      "promoterId": "6085",
+      "segment": "Music",
+      "genre": "Folk",
+      "status": "onsale"
+    },
+    "createdAt": "2025-06-30T06:34:35.401Z",
+    "updatedAt": "2025-06-30T06:34:35.401Z"
+  },
+  {
+    "id": "581ff115-01fb-48b8-bc26-0a597d8aeb2a",
+    "title": "BUET CSE Fest 2025",
+    "description": "Buet Fest Upcoming",
+    "date": "2025-07-30",
+    "time": "10:50",
+    "location": "BUET ECE Building, Dhaka",
+    "category": "technology",
+    "url": "",
+    "datetime": "2025-07-30T10:50:00.000Z",
+    "createdAt": "2025-06-30T06:50:12.484Z",
+    "updatedAt": "2025-06-30T06:50:12.486Z"
   }
 ]
