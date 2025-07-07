@@ -17,22 +17,25 @@ class TicketmasterService {
 
       console.log('Fetching real CSE events from Ticketmaster API...');
       
-      // Search for CSE-related events with broader terms
+      // Improved search queries for better results - reduced to avoid rate limits
       const searchQueries = [
         'technology',
-        'tech',
-        'digital',
-        'innovation',
         'conference',
-        'summit'
+        'summit',
+        'tech',
+        'software'
       ];
 
       let allEvents = [];
       
-      for (const query of searchQueries.slice(0, 3)) { // Limit to 3 queries to avoid rate limiting
+      // Process queries sequentially to avoid rate limiting (5 requests per second limit)
+      for (const query of searchQueries) {
         try {
           const events = await this.searchEvents(query);
           allEvents = allEvents.concat(events);
+          
+          // Add delay between requests to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 300)); // 300ms delay
         } catch (error) {
           console.error(`Error searching for "${query}":`, error.message);
         }
@@ -87,7 +90,9 @@ class TicketmasterService {
         'sort': 'date,asc',
         'startDateTime': now.toISOString().split('.')[0] + 'Z',
         'endDateTime': oneMonthLater.toISOString().split('.')[0] + 'Z',
-        'size': '50', // Increased to get more results for filtering
+        'size': '50', // Increased from 20 to get more results
+        'page': '0',
+        'classificationName': 'Miscellaneous', // Include conferences and tech events
         'apikey': this.apiKey
       });
 
@@ -98,7 +103,7 @@ class TicketmasterService {
         headers: {
           'Content-Type': 'application/json'
         },
-        timeout: 10000
+        timeout: 5000 // Reduced timeout to 5 seconds
       };
 
       const req = https.request(options, (res) => {
@@ -173,6 +178,10 @@ class TicketmasterService {
   formatEvent(ticketmasterEvent) {
     const eventDate = new Date(ticketmasterEvent.dates?.start?.dateTime || ticketmasterEvent.dates?.start?.localDate);
     
+    // Get the best image for banner
+    const images = ticketmasterEvent.images || [];
+    const bannerImage = images.find(img => img.width >= 640) || images.find(img => img.width >= 400) || images[0];
+    
     return {
       id: this.generateId(),
       title: ticketmasterEvent.name || 'Untitled Event',
@@ -183,9 +192,11 @@ class TicketmasterService {
       location: this.formatVenue(ticketmasterEvent._embedded?.venues?.[0]),
       category: this.categorizeEvent(ticketmasterEvent.name, ticketmasterEvent.classifications),
       url: ticketmasterEvent.url,
+      bannerUrl: bannerImage?.url || '',
       source: 'ticketmaster',
       sourceId: ticketmasterEvent.id,
       priceRange: this.formatPriceRange(ticketmasterEvent.priceRanges),
+      images: images, // Store all images for later use
       ticketmasterData: {
         promoterId: ticketmasterEvent.promoter?.id,
         segment: ticketmasterEvent.classifications?.[0]?.segment?.name,

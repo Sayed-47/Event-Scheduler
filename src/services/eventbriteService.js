@@ -17,40 +17,15 @@ class EventbriteService {
 
       console.log('Fetching real CSE events from Eventbrite API...');
       
-      // Search for CSE-related events
-      const searchQueries = [
-        'software development',
-        'programming conference',
-        'computer science',
-        'tech meetup',
-        'developer conference',
-        'coding workshop',
-        'hackathon',
-        'data science',
-        'machine learning',
-        'web development'
-      ];
-
-      let allEvents = [];
+      // Note: Eventbrite API has been restricted and requires OAuth 2.0 authentication
+      // For now, we'll return empty results to avoid errors
+      console.log('Eventbrite API requires OAuth 2.0 authentication - feature disabled');
       
-      for (const query of searchQueries.slice(0, 3)) { // Limit to 3 queries to avoid rate limiting
-        try {
-          const events = await this.searchEvents(query);
-          allEvents = allEvents.concat(events);
-        } catch (error) {
-          console.error(`Error searching for "${query}":`, error.message);
-        }
-      }
-
-      // Remove duplicates and filter for valid events
-      const uniqueEvents = this.removeDuplicates(allEvents);
-      const validEvents = this.filterValidEvents(uniqueEvents);
-      
-      console.log(`Fetched ${validEvents.length} real CSE events from Eventbrite`);
-      return validEvents;
+      console.log('Fetched 0 real CSE events from Eventbrite (API restrictions)');
+      return [];
     } catch (error) {
       console.error('Error fetching Eventbrite events:', error);
-      return []; // Return empty array instead of fake events
+      return [];
     }
   }
 
@@ -67,15 +42,16 @@ class EventbriteService {
         'start_date.range_end': oneMonthLater.toISOString(),
         'expand': 'venue',
         'page_size': '20',
-        'token': this.apiKey
+        'location.address': 'United States' // Add location filter
       });
 
       const options = {
         hostname: 'www.eventbriteapi.com',
-        path: `/v3/events/search?${params.toString()}`,
+        path: `/v3/events/search/?${params.toString()}`,
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
         },
         timeout: 10000
       };

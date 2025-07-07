@@ -22,6 +22,7 @@ class EventScheduler {
       location: eventData.location || '',
       category: eventData.category || 'technology',
       url: eventData.url || '',
+      bannerUrl: eventData.bannerUrl || '',
       source: eventData.source || 'manual',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -61,6 +62,7 @@ class EventScheduler {
       location: eventData.location !== undefined ? eventData.location : existingEvent.location,
       category: eventData.category || existingEvent.category,
       url: eventData.url !== undefined ? eventData.url : existingEvent.url,
+      bannerUrl: eventData.bannerUrl !== undefined ? eventData.bannerUrl : existingEvent.bannerUrl,
       updatedAt: new Date().toISOString()
     };
 

@@ -9,6 +9,15 @@ class MultiAPIService {
     this.dataService = new DataService();
   }
 
+  // Timeout wrapper for API calls
+  async withTimeout(promise, timeoutMs = 15000) {
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('API call timeout')), timeoutMs);
+    });
+    
+    return Promise.race([promise, timeoutPromise]);
+  }
+
   // Fetch events from all configured APIs and save to file (legacy method for auto-save)
   async fetchAndSaveEvents() {
     try {
@@ -117,25 +126,34 @@ class MultiAPIService {
         errors: []
       };
 
-      // Fetch from Eventbrite
-      try {
-        console.log('Fetching CSE events from Eventbrite...');
-        results.eventbrite = await this.eventbriteService.fetchCSEEvents();
-        console.log(`Successfully fetched ${results.eventbrite.length} real events from Eventbrite`);
-      } catch (error) {
-        console.error('Error fetching from Eventbrite:', error);
-        results.errors.push({ source: 'eventbrite', error: error.message });
-      }
+      // Use Promise.allSettled with timeout for parallel execution
+      const apiPromises = [
+        this.withTimeout(this.eventbriteService.fetchCSEEvents(), 10000)
+          .then(events => ({ source: 'eventbrite', events }))
+          .catch(error => ({ source: 'eventbrite', error: error.message })),
+        
+        this.withTimeout(this.ticketmasterService.fetchCSEEvents(), 10000)
+          .then(events => ({ source: 'ticketmaster', events }))
+          .catch(error => ({ source: 'ticketmaster', error: error.message }))
+      ];
 
-      // Fetch from Ticketmaster
-      try {
-        console.log('Fetching CSE events from Ticketmaster...');
-        results.ticketmaster = await this.ticketmasterService.fetchCSEEvents();
-        console.log(`Successfully fetched ${results.ticketmaster.length} real events from Ticketmaster`);
-      } catch (error) {
-        console.error('Error fetching from Ticketmaster:', error);
-        results.errors.push({ source: 'ticketmaster', error: error.message });
-      }
+      const apiResults = await Promise.allSettled(apiPromises);
+      
+      apiResults.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          const { source, events, error } = result.value;
+          if (error) {
+            console.error(`Error fetching from ${source}:`, error);
+            results.errors.push({ source, error });
+          } else {
+            results[source] = events || [];
+            console.log(`Successfully fetched ${events.length} events from ${source}`);
+          }
+        } else {
+          console.error(`API call failed:`, result.reason);
+          results.errors.push({ source: 'unknown', error: result.reason.message });
+        }
+      });
 
       // Combine all events
       const allEvents = [...results.eventbrite, ...results.ticketmaster];
@@ -146,51 +164,36 @@ class MultiAPIService {
         const uniqueEvents = this.removeDuplicates(allEvents);
         console.log(`Unique events after deduplication: ${uniqueEvents.length}`);
 
-        // Get existing events to filter out already saved events
-        const existingEvents = await this.dataService.loadEvents();
+        const summary = this.createEventSummary(uniqueEvents, results.errors);
         
-        // Filter out events that already exist in the system
-        const newEvents = uniqueEvents.filter(newEvent => {
-          return !existingEvents.some(existing => 
-            existing.sourceId === newEvent.sourceId && existing.source === newEvent.source
-          );
-        });
-
-        console.log(`${newEvents.length} new events available for approval (${uniqueEvents.length - newEvents.length} already in system)`);
-
-        // Sort by date
-        const sortedEvents = this.sortEventsByDate(newEvents);
-
         return {
-          events: sortedEvents,
-          summary: {
-            total: sortedEvents.length,
-            eventbrite: results.eventbrite.length,
-            ticketmaster: results.ticketmaster.length,
-            duplicatesRemoved: allEvents.length - uniqueEvents.length,
-            alreadyExists: uniqueEvents.length - newEvents.length,
-            errors: results.errors,
-            saved: false
-          }
+          events: uniqueEvents,
+          summary,
+          success: true
         };
       } else {
+        console.log('No events found from any API');
         return {
           events: [],
           summary: {
             total: 0,
-            eventbrite: 0,
-            ticketmaster: 0,
-            duplicatesRemoved: 0,
-            alreadyExists: 0,
-            errors: results.errors,
-            saved: false,
-            message: 'No CSE events found from external APIs'
-          }
+            bySource: { eventbrite: 0, ticketmaster: 0 },
+            errors: results.errors
+          },
+          success: false
         };
       }
     } catch (error) {
       console.error('Error in fetchAllEvents:', error);
-      throw error;
+      return {
+        events: [],
+        summary: {
+          total: 0,
+          bySource: { eventbrite: 0, ticketmaster: 0 },
+          errors: [{ source: 'system', error: error.message }]
+        },
+        success: false
+      };
     }
   }
 
@@ -539,6 +542,25 @@ class MultiAPIService {
     } else {
       return 'technology';
     }
+  }
+
+  // Create event summary
+  createEventSummary(events, errors = []) {
+    const summary = {
+      total: events.length,
+      bySource: { eventbrite: 0, ticketmaster: 0 },
+      errors: errors
+    };
+
+    events.forEach(event => {
+      if (event.source === 'eventbrite') {
+        summary.bySource.eventbrite++;
+      } else if (event.source === 'ticketmaster') {
+        summary.bySource.ticketmaster++;
+      }
+    });
+
+    return summary;
   }
 }
 

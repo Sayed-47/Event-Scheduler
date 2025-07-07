@@ -24,6 +24,9 @@ class EventSchedulerApp {
     document.getElementById('cancelBtn').addEventListener('click', () => this.closeModal());
     document.getElementById('eventForm').addEventListener('submit', (e) => this.handleFormSubmit(e));
 
+    // Event detail modal events
+    document.getElementById('detailModalClose').addEventListener('click', () => this.closeDetailModal());
+    
     // Approval section events
     document.getElementById('selectAllBtn').addEventListener('click', () => this.selectAllEvents());
     document.getElementById('deselectAllBtn').addEventListener('click', () => this.deselectAllEvents());
@@ -38,17 +41,27 @@ class EventSchedulerApp {
       btn.addEventListener('click', (e) => this.toggleView(e.target.dataset.view));
     });
 
-    // Close modal on outside click
+    // Close modals on outside click
     document.getElementById('eventModal').addEventListener('click', (e) => {
       if (e.target.id === 'eventModal') {
         this.closeModal();
       }
     });
+    
+    document.getElementById('eventDetailModal').addEventListener('click', (e) => {
+      if (e.target.id === 'eventDetailModal') {
+        this.closeDetailModal();
+      }
+    });
 
-    // Close modal on escape key
+    // Close modals on escape key
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && document.getElementById('eventModal').classList.contains('active')) {
-        this.closeModal();
+      if (e.key === 'Escape') {
+        if (document.getElementById('eventModal').classList.contains('active')) {
+          this.closeModal();
+        } else if (document.getElementById('eventDetailModal').classList.contains('active')) {
+          this.closeDetailModal();
+        }
       }
     });
   }
@@ -339,6 +352,7 @@ class EventSchedulerApp {
     document.getElementById('eventLocation').value = event.location || '';
     document.getElementById('eventCategory').value = event.category || 'technology';
     document.getElementById('eventUrl').value = event.url || '';
+    document.getElementById('eventBannerUrl').value = event.bannerUrl || '';
   }
 
   handleFormSubmit(e) {
@@ -352,8 +366,18 @@ class EventSchedulerApp {
       time: formData.get('time'),
       location: formData.get('location').trim(),
       category: formData.get('category'),
-      url: formData.get('url').trim()
+      url: formData.get('url').trim(),
+      bannerUrl: formData.get('bannerUrl').trim()
     };
+
+    // Handle file upload for banner
+    const bannerFile = formData.get('banner');
+    if (bannerFile && bannerFile.size > 0) {
+      // For now, we'll just use a placeholder since file upload to server would require additional backend setup
+      // In a real implementation, you'd upload the file to a server or cloud storage
+      console.log('Banner file selected:', bannerFile.name);
+      this.showNotification('Banner file selected. Note: File upload feature requires server implementation.', 'info');
+    }
 
     // Validation
     if (!this.validateForm(eventData)) {
@@ -516,12 +540,24 @@ class EventSchedulerApp {
     
     const listViewClass = this.currentView === 'list' ? 'list-view' : '';
     
+    // Get short description (first 100 characters)
+    const shortDescription = event.description ? 
+      (event.description.length > 100 ? event.description.substring(0, 100) + '...' : event.description) : 
+      'No description available';
+    
+    // Get banner image
+    const bannerImage = this.getEventBanner(event);
+    const bannerHtml = bannerImage ? 
+      `<div class="event-card-banner"><img src="${bannerImage}" alt="${event.title}" loading="lazy"></div>` :
+      `<div class="event-card-banner no-image"></div>`;
+    
     return `
-      <div class="event-card ${listViewClass}" data-id="${event.id}">
-        <div class="event-card-header">
+      <div class="event-card ${listViewClass}" data-id="${event.id}" onclick="eventApp.openEventDetail('${event.id}')">
+        ${bannerHtml}
+        <div class="event-card-content">
           <div class="event-category">${event.category}</div>
           <h3 class="event-title">${event.title}</h3>
-          ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
+          <p class="event-description-short">${shortDescription}</p>
           <div class="event-meta">
             <div class="event-meta-item">
               <i class="fas fa-calendar"></i>
@@ -537,21 +573,15 @@ class EventSchedulerApp {
                 <span>${event.location}</span>
               </div>
             ` : ''}
-            ${event.url ? `
-              <div class="event-meta-item">
-                <i class="fas fa-external-link-alt"></i>
-                <a href="${event.url}" target="_blank" rel="noopener noreferrer">Event Link</a>
-              </div>
-            ` : ''}
           </div>
         </div>
         <div class="event-actions">
           <div class="event-status ${status}">${status}</div>
           <div class="event-buttons">
-            <button class="event-btn edit-btn" data-id="${event.id}">
+            <button class="event-btn edit-btn" data-id="${event.id}" onclick="event.stopPropagation(); eventApp.openModal(eventApp.events.find(e => e.id === '${event.id}'))">
               <i class="fas fa-edit"></i> Edit
             </button>
-            <button class="event-btn danger delete-btn" data-id="${event.id}">
+            <button class="event-btn danger delete-btn" data-id="${event.id}" onclick="event.stopPropagation(); eventApp.deleteEvent('${event.id}')">
               <i class="fas fa-trash"></i> Delete
             </button>
           </div>
@@ -561,26 +591,126 @@ class EventSchedulerApp {
   }
 
   bindEventCardActions() {
-    // Edit buttons
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const eventId = btn.dataset.id;
-        const event = this.events.find(e => e.id === eventId);
-        if (event) {
-          this.openModal(event);
-        }
-      });
-    });
+    // Card click events are now handled by inline onclick
+    // Edit and delete buttons have their own onclick handlers to prevent event bubbling
+  }
 
-    // Delete buttons
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const eventId = btn.dataset.id;
-        this.deleteEvent(eventId);
-      });
+  // Get event banner image
+  getEventBanner(event) {
+    // Check for custom banner URL
+    if (event.bannerUrl) {
+      return event.bannerUrl;
+    }
+    
+    // Check for API event images
+    if (event.source === 'ticketmaster' && event.images && event.images.length > 0) {
+      // Find the best image size
+      const image = event.images.find(img => img.width >= 400) || event.images[0];
+      return image.url;
+    }
+    
+    if (event.source === 'eventbrite' && event.logo && event.logo.url) {
+      return event.logo.url;
+    }
+    
+    // Default category-based gradients could be returned here
+    return null;
+  }
+
+  // Open event detail modal
+  openEventDetail(eventId) {
+    const event = this.events.find(e => e.id === eventId);
+    if (!event) return;
+
+    const modal = document.getElementById('eventDetailModal');
+    
+    // Populate event details
+    document.getElementById('detailModalTitle').textContent = event.title;
+    document.getElementById('eventDetailCategory').textContent = event.category;
+    document.getElementById('eventDetailTitle').textContent = event.title;
+    
+    // Format date and time
+    const eventDate = new Date(event.datetime || event.date);
+    document.getElementById('eventDetailDate').textContent = eventDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
+    document.getElementById('eventDetailTime').textContent = event.time || eventDate.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    
+    // Location
+    const locationContainer = document.getElementById('eventDetailLocationContainer');
+    if (event.location) {
+      document.getElementById('eventDetailLocation').textContent = event.location;
+      locationContainer.style.display = 'flex';
+    } else {
+      locationContainer.style.display = 'none';
+    }
+    
+    // Source
+    const sourceContainer = document.getElementById('eventDetailSourceContainer');
+    if (event.source && event.source !== 'manual') {
+      document.getElementById('eventDetailSource').textContent = `Source: ${event.source}`;
+      sourceContainer.style.display = 'flex';
+    } else {
+      sourceContainer.style.display = 'none';
+    }
+    
+    // Description
+    const descriptionElement = document.getElementById('eventDetailDescription');
+    if (event.description && event.description.trim()) {
+      descriptionElement.textContent = event.description;
+      descriptionElement.classList.remove('empty');
+    } else {
+      descriptionElement.textContent = 'No detailed description available for this event.';
+      descriptionElement.classList.add('empty');
+    }
+    
+    // Banner
+    const bannerContainer = document.getElementById('eventDetailBanner');
+    const bannerImage = this.getEventBanner(event);
+    if (bannerImage) {
+      bannerContainer.innerHTML = `<img src="${bannerImage}" alt="${event.title}" loading="lazy">`;
+      bannerContainer.classList.remove('no-image');
+    } else {
+      bannerContainer.innerHTML = '';
+      bannerContainer.classList.add('no-image');
+    }
+    
+    // Event link
+    const linkButton = document.getElementById('eventDetailLink');
+    if (event.url) {
+      linkButton.href = event.url;
+      linkButton.style.display = 'inline-flex';
+    } else {
+      linkButton.style.display = 'none';
+    }
+    
+    // Action buttons
+    document.getElementById('eventDetailEdit').onclick = () => {
+      this.closeDetailModal();
+      this.openModal(event);
+    };
+    
+    document.getElementById('eventDetailDelete').onclick = () => {
+      this.closeDetailModal();
+      this.deleteEvent(event.id);
+    };
+    
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Close event detail modal
+  closeDetailModal() {
+    const modal = document.getElementById('eventDetailModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
   }
 
   updateStats() {

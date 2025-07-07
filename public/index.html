@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/event-cards.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -205,11 +206,79 @@
                     <label for="eventUrl">Event URL</label>
                     <input type="url" id="eventUrl" name="url">
                 </div>
+                <div class="form-group">
+                    <label for="eventBanner">Event Banner Image</label>
+                    <input type="file" id="eventBanner" name="banner" accept="image/*">
+                    <small class="form-hint">Upload an image banner for your event (optional)</small>
+                </div>
+                <div class="form-group">
+                    <label for="eventBannerUrl">Or Banner Image URL</label>
+                    <input type="url" id="eventBannerUrl" name="bannerUrl" placeholder="https://example.com/banner.jpg">
+                    <small class="form-hint">Alternatively, provide a direct link to an image</small>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="saveBtn">Save Event</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div class="modal" id="eventDetailModal">
+        <div class="modal-content event-detail-modal">
+            <div class="modal-header">
+                <h2 id="detailModalTitle">Event Details</h2>
+                <button class="modal-close" id="detailModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="event-detail-banner" id="eventDetailBanner">
+                    <!-- Event banner will be displayed here -->
+                </div>
+                <div class="event-detail-content">
+                    <div class="event-detail-header">
+                        <div class="event-detail-category" id="eventDetailCategory"></div>
+                        <h1 class="event-detail-title" id="eventDetailTitle"></h1>
+                    </div>
+                    <div class="event-detail-meta">
+                        <div class="event-detail-meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span id="eventDetailDate"></span>
+                        </div>
+                        <div class="event-detail-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="eventDetailTime"></span>
+                        </div>
+                        <div class="event-detail-meta-item" id="eventDetailLocationContainer">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="eventDetailLocation"></span>
+                        </div>
+                        <div class="event-detail-meta-item" id="eventDetailSourceContainer">
+                            <i class="fas fa-tag"></i>
+                            <span id="eventDetailSource"></span>
+                        </div>
+                    </div>
+                    <div class="event-detail-description" id="eventDetailDescription">
+                        <!-- Full description will be displayed here -->
+                    </div>
+                    <div class="event-detail-actions">
+                        <a class="btn btn-primary" id="eventDetailLink" target="_blank" rel="noopener noreferrer" style="display: none;">
+                            <i class="fas fa-external-link-alt"></i>
+                            Visit Event Page
+                        </a>
+                        <button class="btn btn-secondary" id="eventDetailEdit">
+                            <i class="fas fa-edit"></i>
+                            Edit Event
+                        </button>
+                        <button class="btn btn-danger" id="eventDetailDelete">
+                            <i class="fas fa-trash"></i>
+                            Delete Event
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
