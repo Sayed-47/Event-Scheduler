@@ -1,7 +1,7 @@
 {
-  "name": "event-scheduler-app",
+  "name": "eventx",
   "version": "1.0.0",
-  "description": "Event Scheduler with DSA algorithms - Node.js version",
+  "description": "EventX - Algo Based Event Management System with DSA algorithms",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,11 +10,13 @@
   },
   "keywords": [
     "event",
+    "management",
     "scheduler",
     "dsa",
-    "algorithms"
+    "algorithms",
+    "eventx"
   ],
-  "author": "Your Name",
+  "author": "Abu Sayed",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.10.0",

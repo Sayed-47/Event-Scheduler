@@ -1,6 +1,6 @@
-# Event Scheduler Application
+# EventX - Algo Based Event Management System
 
-A comprehensive event management system that integrates with multiple event APIs (Ticketmaster, Eventbrite) and provides advanced scheduling capabilities with data structures and algorithms implementation.
+A comprehensive event management system that integrates with multiple event APIs (Ticketmaster, Eventbrite) and provides advanced scheduling capabilities with sophisticated data structures and algorithms implementation.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ A comprehensive event management system that integrates with multiple event APIs
 
 ## Overview
 
-Event Scheduler is a full-stack web application designed to help users discover, manage, and organize events efficiently. The application integrates with major event platforms and implements sophisticated data structures and algorithms for optimal event search, sorting, and filtering capabilities.
+EventX is an algorithm-based full-stack event management system designed to help users discover, manage, and organize events efficiently. The application integrates with major event platforms and implements sophisticated data structures and algorithms for optimal event search, sorting, and filtering capabilities.
 
 ### Key Capabilities
 
@@ -108,7 +108,7 @@ Event Scheduler is a full-stack web application designed to help users discover,
 ## Project Structure
 
 ```
-Event-Scheduler/
+EventX/
 ├── data/
 │   └── events.json              # Persistent event storage
 ├── public/
@@ -151,8 +151,8 @@ Before installing and running this application, ensure you have:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Sayed-47/Event-Scheduler.git
-cd Event-Scheduler
+git clone https://github.com/Sayed-47/EventX.git
+cd EventX
 ```
 
 ### 2. Install Dependencies
@@ -568,7 +568,7 @@ The interface adapts to:
 3. Create a new app:
 
 ```bash
-heroku create event-scheduler-app
+heroku create eventx-app
 ```
 
 4. Set environment variables:
@@ -617,8 +617,8 @@ CMD ["node", "server.js"]
 Build and run:
 
 ```bash
-docker build -t event-scheduler .
-docker run -p 3000:3000 --env-file .env event-scheduler
+docker build -t eventx .
+docker run -p 3000:3000 --env-file .env eventx
 ```
 
 ## Contributing
@@ -716,7 +716,7 @@ This project is licensed under the MIT License. See the LICENSE file for details
 **Abu Sayed**
 
 - GitHub: [@Sayed-47](https://github.com/Sayed-47)
-- Project: [Event-Scheduler](https://github.com/Sayed-47/Event-Scheduler)
+- Project: [EventX](https://github.com/Sayed-47/EventX)
 
 ## Future Enhancements
 
